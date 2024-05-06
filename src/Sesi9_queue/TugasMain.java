@@ -26,7 +26,6 @@ public class TugasMain {
         // Dequeue 2x
         System.out.println("### Dequeue 2x ###");
         System.out.println("Dequeue: " + queue.dequeue());
-        System.out.println("Dequeue: " + queue.dequeue());
         System.out.println("size: " + queue.ukuran());
         System.out.println("isEmpty: " + queue.isEmpty());
         queue.displayElements();
