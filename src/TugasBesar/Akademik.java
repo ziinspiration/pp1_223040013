@@ -1,55 +1,89 @@
 package TugasBesar;
 
-import java.util.ArrayList; // Import kelas ArrayList
-import java.util.List; // Import interface List
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class Akademik { // Deklarasi kelas publik
-    private List<Mahasiswa> daftarMahasiswa; // Deklarasi variabel daftarMahasiswa sebagai daftar objek Mahasiswa
+public class Akademik {
+    private List<Mahasiswa> daftarMahasiswa;
+    private Map<Prodi, List<Mahasiswa>> daftarMahasiswaProdi;
 
-    public Akademik() { // Konstruktor kelas Akademik
-        this.daftarMahasiswa = new ArrayList<>(); // Inisialisasi daftarMahasiswa sebagai ArrayList kosong
+    public Akademik() {
+        this.daftarMahasiswa = new ArrayList<>();
+        this.daftarMahasiswaProdi = new HashMap<>();
+        for (Prodi prodi : Prodi.values()) {
+            daftarMahasiswaProdi.put(prodi, new ArrayList<>());
+        }
     }
 
-    public void AddMahasiswa(Mahasiswa mahasiswa) { // Metode untuk menambahkan Mahasiswa ke daftar
-        daftarMahasiswa.add(mahasiswa); // Menambahkan objek mahasiswa ke daftarMahasiswa
-        System.out.println("Mahasiswa berhasil ditambahkan."); // Menampilkan pesan konfirmasi
+    public void AddMahasiswa(Mahasiswa mahasiswa) {
+        daftarMahasiswa.add(mahasiswa);
+        System.out.println("Mahasiswa berhasil ditambahkan.");
     }
 
-    public void DelMahasiswa(String nim) { // Metode untuk menghapus Mahasiswa berdasarkan NIM
-        Mahasiswa mahasiswaDihapus = null; // Inisialisasi variabel mahasiswaDihapus sebagai null
-        for (Mahasiswa mahasiswa : daftarMahasiswa) { // Loop untuk mencari Mahasiswa dengan NIM tertentu
-            if (mahasiswa.getNim().equals(nim)) { // Jika NIM Mahasiswa cocok
-                mahasiswaDihapus = mahasiswa; // Set mahasiswaDihapus ke Mahasiswa yang ditemukan
-                break; // Keluar dari loop
+    public void AddMahasiswaKeProdi(String nim, Prodi prodi) {
+        Mahasiswa mahasiswa = findMahasiswaByNim(nim);
+        if (mahasiswa != null) {
+            daftarMahasiswaProdi.get(prodi).add(mahasiswa);
+            System.out.println("Mahasiswa berhasil ditambahkan ke prodi " + prodi);
+        } else {
+            System.out.println("Mahasiswa dengan NIM " + nim + " tidak ditemukan.");
+        }
+    }
+
+    public void DelMahasiswa(String nim) {
+        Mahasiswa mahasiswaDihapus = findMahasiswaByNim(nim);
+
+        if (mahasiswaDihapus != null) {
+            daftarMahasiswa.remove(mahasiswaDihapus);
+            for (List<Mahasiswa> mahasiswaList : daftarMahasiswaProdi.values()) {
+                mahasiswaList.remove(mahasiswaDihapus);
+            }
+            System.out.println("Mahasiswa dengan NIM " + nim + " berhasil dihapus.");
+        } else {
+            System.out.println("Mahasiswa dengan NIM " + nim + " tidak ditemukan.");
+        }
+    }
+
+    public void SearchMahasiswa(String nim) {
+        Mahasiswa mahasiswa = findMahasiswaByNim(nim);
+        if (mahasiswa != null) {
+            System.out.println("Mahasiswa ditemukan: " + mahasiswa);
+        } else {
+            System.out.println("Mahasiswa dengan NIM " + nim + " tidak ditemukan.");
+        }
+    }
+
+    public void tampilkanDaftarMahasiswa() {
+        if (daftarMahasiswa.isEmpty()) {
+            System.out.println("Daftar mahasiswa kosong.");
+        } else {
+            System.out.println("Daftar Mahasiswa:");
+            for (Mahasiswa mahasiswa : daftarMahasiswa) {
+                System.out.println(mahasiswa);
             }
         }
+    }
 
-        if (mahasiswaDihapus != null) { // Jika Mahasiswa ditemukan
-            daftarMahasiswa.remove(mahasiswaDihapus); // Hapus Mahasiswa dari daftarMahasiswa
-            System.out.println("Mahasiswa dengan NIM " + nim + " berhasil dihapus."); // Tampilkan pesan konfirmasi
-        } else { // Jika Mahasiswa tidak ditemukan
-            System.out.println("Mahasiswa dengan NIM " + nim + " tidak ditemukan."); // Tampilkan pesan kesalahan
+    public void tampilkanDaftarMahasiswaBerdasarkanProdi(Prodi prodi) {
+        List<Mahasiswa> mahasiswaProdi = daftarMahasiswaProdi.get(prodi);
+        if (mahasiswaProdi.isEmpty()) {
+            System.out.println("Daftar mahasiswa untuk prodi " + prodi + " kosong.");
+        } else {
+            System.out.println("Daftar Mahasiswa untuk prodi " + prodi + ":");
+            for (Mahasiswa mahasiswa : mahasiswaProdi) {
+                System.out.println(mahasiswa);
+            }
         }
     }
 
-    public void SearchMahasiswa(String nim) { // Metode untuk mencari Mahasiswa berdasarkan NIM
-        for (Mahasiswa mahasiswa : daftarMahasiswa) { // Loop untuk mencari Mahasiswa dengan NIM tertentu
-            if (mahasiswa.getNim().equals(nim)) { // Jika NIM Mahasiswa cocok
-                System.out.println("Mahasiswa ditemukan: " + mahasiswa); // Tampilkan Mahasiswa yang ditemukan
-                return; // Keluar dari metode
+    private Mahasiswa findMahasiswaByNim(String nim) {
+        for (Mahasiswa mahasiswa : daftarMahasiswa) {
+            if (mahasiswa.getNim().equals(nim)) {
+                return mahasiswa;
             }
         }
-        System.out.println("Mahasiswa dengan NIM " + nim + " tidak ditemukan."); // Tampilkan pesan jika tidak ditemukan
-    }
-
-    public void tampilkanDaftarMahasiswa() { // Metode untuk menampilkan daftar Mahasiswa
-        if (daftarMahasiswa.isEmpty()) { // Jika daftarMahasiswa kosong
-            System.out.println("Daftar mahasiswa kosong."); // Tampilkan pesan bahwa daftar kosong
-        } else { // Jika daftarMahasiswa tidak kosong
-            System.out.println("Daftar Mahasiswa:"); // Tampilkan header daftar Mahasiswa
-            for (Mahasiswa mahasiswa : daftarMahasiswa) { // Loop untuk setiap Mahasiswa dalam daftar
-                System.out.println(mahasiswa); // Tampilkan Mahasiswa
-            }
-        }
+        return null;
     }
 }
